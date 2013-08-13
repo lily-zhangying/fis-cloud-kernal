@@ -8,7 +8,7 @@ var childs = [],
 
 
 function createWorker(){
-  var worker = cp.fork("./work-express-domain.js");
+  var worker = cp.fork("./work.js");
   worker.on("exit", handleWorkerClose);
   return worker;
 }

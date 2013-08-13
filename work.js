@@ -27,6 +27,20 @@ app.all("*", handleRequest);
 function handleRequest(req, res){
     process.nextTick(function(){
         //这里写正常处理逻辑
+        var pathname = req.params[0];
+        if(pathname.substr(0, 1) === '/'){
+            pathname = pathname.substr(1);
+        }
+        var urlSplit =  pathname.split('/');
+        var app = requireApp(urlSplit[0]);
+        var method = urlSplit[1];
+        if(typeof app[method] === 'function'){
+            app[method](req, res);
+        }else if(typeof app === 'function'){
+            app(req, res);
+        } else {
+            res.send(404, 'Sorry, Not Found');
+        }
         process.disconnect();
         process.exit();
     });
@@ -47,6 +61,10 @@ function handleMessage(self, handle){
     socket.emit("connect");
 }
 
+function requireApp(appname){
+    var name = 'fis-cloud-app-' + appname;
+    return require(name);
+}
 
 process.on("message", function(m ,handle){
     if(handle){
